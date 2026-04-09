@@ -1,0 +1,190 @@
+show run
+Building configuration...
+
+
+Current configuration : 4565 bytes
+!
+! Last configuration change at 19:35:56 UTC Wed Apr 9 2025
+!
+version 16.9
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+no ip domain lookup
+ip domain name ccna-lab.com
+!
+ --More--         ip dhcp pool webuidhcp
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-859558890
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-859558890
+ revocation-check none
+ rsakeypair TP-self-signed-859558890
+!
+!
+ --More--         crypto pki certificate chain TP-self-signed-859558890
+ certificate self-signed 01
+  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 38353935 35383839 30301E17 0D323530 34303930 39343334 
+  385A170D 33303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F 
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3835 39353538 
+  38393030 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02 
+  82010100 9F303B73 BFEA3A8C ACD5A0D5 1D3374FB 0DE97669 E507689B C738F2B5 
+  69F02743 847D101D DC65EFCF 8DE37941 6FEFB30F 54FB7749 E09BA2D7 28AC32D9 
+  E70531E7 6ADBCE03 1FDDEF4F 0A02807E A877A58B D0F68BD1 2B9DD248 17D30591 
+  14368F56 F9E2CA48 F258213B CDA93A7A 681E9C13 C810413B 12A58107 B9FF31A2 
+  FE9C559B 358559E2 147FE8AC 4952812F 030687B1 553381D8 23B48BDC E94B53BD 
+  5431E27A 55A44E4E A0DA88B4 A744A266 BCE540F6 68E50DC0 86C1EE79 FDD17D9F 
+  6F62BC14 7A3F5DD1 EE5AB1F4 948DF38A D22A8CB7 B4E4E6C1 479BF44E B1532994 
+  2ECA83FE 2A243D06 414D8352 F246C774 A6CC4E71 3F061E19 A18D7B93 98369371 
+  4D519C65 02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F 
+  0603551D 23041830 16801435 EE6CA0C8 24BAE9DA C5F69E2A 52FDE607 9FAC6E30 
+  1D060355 1D0E0416 041435EE 6CA0C824 BAE9DAC5 F69E2A52 FDE6079F AC6E300D 
+  06092A86 4886F70D 01010505 00038201 01004F2E 4B0A7DEA 5B1BBFCF FE97D3E9 
+  D5055F21 45855A31 968EA543 A3CEDA36 0E6DCA7E C2D07379 773B3FE1 BFCA0A67 
+  FE95FBD9 5BDBE9A7 CF11D637 964B589D 11B4177C 69A598AF C78DA0F0 9689FAE8 
+  FC25DA11 76E38029 9E0226DA 9AE6F51E E1EFFB54 E4350C33 3368480C 87E404F2 
+ --More--           7273CCFA 28A28666 83F23A75 1DB69C8E CE09CE4D E8A50069 DFA24F9C A6B58CD5 
+  21D821B9 2DA3DA4C 6DD12F84 EAFF4548 DC825E49 4EFBC519 CD46698F D6B008C4 
+  2B8A95EA E7EEDF91 9A21F38A C5B695CE BE6722AE 2C30E501 3ED16231 7B8E6C66 
+  61FF6299 90257DEA 7E2ADD57 FBD2DBD0 4CD775F6 3A604577 D3E5B913 58A5146A 
+  67BD299C 41EF7834 FC7392F4 8364B99D 2830
+  	quit
+!
+license udi pid ISR4221/K9 sn FJC2350A11E
+no license smart enable
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+!
+!
+username SSHadmin secret 5 $1$DVTM$xxlHw4qFrQ1rQWceIF6.C.
+!
+redundancy
+ mode none
+!
+!
+!
+!
+ --More--         !
+!
+!
+!
+interface Loopback1
+ no ip address
+!
+interface GigabitEthernet0/0/0
+ ip address 172.16.1.1 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet0/0/1
+ no ip address
+ negotiation auto
+!
+interface GigabitEthernet0/0/1.20
+ description Management Network
+ encapsulation dot1Q 20
+ ip address 10.20.0.1 255.255.255.0
+!
+interface GigabitEthernet0/0/1.30
+ description Operations Network
+ encapsulation dot1Q 30
+ --More--          ip address 10.30.0.1 255.255.255.0
+ ip access-group 102 in
+!
+interface GigabitEthernet0/0/1.40
+ description Sales Network
+ encapsulation dot1Q 40
+ ip address 10.40.0.1 255.255.255.0
+ ip access-group 101 in
+!
+interface GigabitEthernet0/0/1.1000
+ description native VLAN
+ encapsulation dot1Q 1000 native
+!
+interface Serial0/1/0
+ no ip address
+!
+interface Serial0/1/1
+ no ip address
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ --More--         !
+!
+access-list 101 remark ACL 101
+access-list 101 deny   tcp 10.40.0.0 0.0.0.255 10.20.0.0 0.0.0.255 eq 22
+access-list 101 deny   tcp 10.40.0.0 0.0.0.255 host 172.16.1.2 eq www
+access-list 101 deny   tcp 10.40.0.0 0.0.0.255 host 172.16.1.2 eq 443
+access-list 101 deny   icmp 10.40.0.0 0.0.0.255 10.20.0.0 0.0.0.255 echo
+access-list 101 deny   icmp 10.40.0.0 0.0.0.255 10.30.0.0 0.0.0.255 echo
+access-list 101 permit ip any any
+access-list 102 deny   icmp 10.30.0.0 0.0.0.255 10.40.0.0 0.0.0.255 echo
+access-list 102 deny   tcp 10.30.0.0 0.0.0.255 host 172.16.1.1 eq 22
+access-list 102 permit ip any any
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ password cisco
+ login
+ transport input none
+ --More--          stopbits 1
+line vty 0 4
+ password cisco
+ login local
+ transport input ssh
+!
+!
+!
+!
+!
+!
+end
+
+R1#show access-lists
+Extended IP access list 101
+    10 deny tcp 10.40.0.0 0.0.0.255 10.20.0.0 0.0.0.255 eq 22 (8 matches)
+    20 deny tcp 10.40.0.0 0.0.0.255 host 172.16.1.2 eq www
+    30 deny tcp 10.40.0.0 0.0.0.255 host 172.16.1.2 eq 443
+    40 deny icmp 10.40.0.0 0.0.0.255 10.20.0.0 0.0.0.255 echo (8 matches)
+    50 deny icmp 10.40.0.0 0.0.0.255 10.30.0.0 0.0.0.255 echo (4 matches)
+    60 permit ip any any (6073 matches)
+Extended IP access list 102
+    10 deny icmp 10.30.0.0 0.0.0.255 10.40.0.0 0.0.0.255 echo
+    20 deny tcp 10.30.0.0 0.0.0.255 host 172.16.1.1 eq 22 (10 matches)
+    30 permit ip any any (549 matches)
+R1#

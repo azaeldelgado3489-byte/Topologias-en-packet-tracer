@@ -1,0 +1,36 @@
+
+hostname R1
+no ip domain-lookup
+username SSHadmin secret cisco
+ip domain-name ccna-lab.com
+interface Loopback1
+ip address 172.16.1.1 255.255.255.0
+no shutdown
+interface g0/0/0
+ip address 172.16.1.1 255.255.255.0
+no shutdown
+interface GigabitEthernet0/0/1
+no shutdown
+interface GigabitEthernet0/0/1.20
+description Management Network
+encapsulation dot1Q 20
+ip address 10.20.0.1 255.255.255.0
+interface GigabitEthernet0/0/1.30
+description Operations Network
+encapsulation dot1Q 30
+ip address 10.30.0.1 255.255.255.0
+interface GigabitEthernet0/0/1.40
+description Sales Network
+encapsulation dot1Q 40
+ip address 10.40.0.1 255.255.255.0
+interface GigabitEthernet0/0/1.1000
+description native VLAN
+encapsulation dot1Q 1000 native
+line con 0
+password cisco
+login
+line vty 0 4
+transport input ssh
+password cisco
+login local
+end

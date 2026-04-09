@@ -1,0 +1,10 @@
+
+hostname R2
+interface GigabitEthernet0/0/1
+ip address 10.20.0.4 255.255.255.0
+no shutdown
+ip route 0.0.0.0 0.0.0.0 10.20.0.1 
+line vty 0 4
+password cisco
+login
+end
