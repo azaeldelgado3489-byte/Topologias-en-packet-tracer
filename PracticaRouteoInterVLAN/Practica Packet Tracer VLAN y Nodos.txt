@@ -1,0 +1,151 @@
+2 switches cisco como si fuera el IDF
+
+2 servidores para produccion
+
+2 pcs de oficina
+
+2 router
+
+
+Configuracion del switch:
+
+hostname SW-IDF-PLANTA-01
+no ip domain look
+
+//Creacion de VLANS
+conf t
+vlan 10
+name OFICINAS
+vlan 20
+name PRODUCCION
+
+//Asignacion de puertos
+interface range f0/1-2
+switchport mode access
+switchport access vlan 10
+exit
+interface range f0/10-11
+switchport mode access
+switchport access vlan 20
+exit
+
+interface vlan 99
+ip address 10.0.99.1 255.255.255.0
+no shut
+description Administracion remota
+exit
+
+// Contrasenas de acceso
+line vty 0 4 
+password @D01256SUPA
+login
+exit
+enable secret Sw1tCH2026
+
+Configuracion de direcciones ip segun su VLAN para poder tener una mejor visualizacion
+
+ Oficina (VLAN 10):
+
+PC 01: 192.168.10.1 / Máscara: 255.255.255.0
+
+PC 02: 192.168.10.2 / Máscara: 255.255.255.0
+
+ Planta (VLAN 20):
+
+Nodo 01: 192.168.20.1 / Máscara: 255.255.255.0
+
+Nodo 02: 192.168.20.2 / Máscara: 255.255.255.0
+
+No debe de haber comunicacion entre las vlans pues eso Tambien refuerza la seguridad en el sentido de que si hay un ciberataque o asi que solo sea a un segmento y no se extienda a otras areas.
+
+//Agregar un servidor DHCP
+agregar el servidor a la vlan 10
+int f0/24
+description ServidorDHCP
+switchport mode access
+switchport access vlan 10
+exit
+
+// Etiquetado de cada puerto correspondiente
+interface f0/1
+description PC-OFICINA-01
+interface f0/2
+description PC-OFICINA-02
+interface f0/10
+description Nodo-planta-01
+interface f0/11
+description Nodo-planta-02
+interface f0/24
+description ServerDHCP
+exit
+
+//Configuracion de seguridad en el puerto del servidor DHCP
+interface f0/24
+switchport port-security
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+
+
+//Creamos otra red donde vamos a explorar nuevas configuraciones como routeo intervlan, lacp y accesslists
+
+En el otro switch ponemos modo troncal la conexion a su router
+
+SW-IDF-PLANTA-01(config)#interface g0/1
+SW-IDF-PLANTA-01(config-if)#switchport mode trunk
+
+#show interfaces switchport
+#interface g0/2
+#switchport mode trunk
+#switchport trunk allowed vlan 10,20,30,40
+
+//Configuracion de subinterfaces en el router A
+#interface g0/0/0
+no shut
+
+#interface g0/0/0.10
+#encapsulation dot1Q 10
+#ip address 192.168.10.254 255.255.255.0
+#exit
+
+#interface g0/0/0.20
+#encapsulation dot1Q 20
+#ip address 192.168.20.254 255.255.255.0
+#exit
+
+//Configuracion de subinterfaces en el router B
+
+#interface g0/0/0
+no shut
+
+#interface g0/0/0.30
+#ensapsulation dot1Q 30
+	
+#encapsulation dot1Q 30
+#ip address 172.16.30.254 255.255.255.0
+#exit
+#encapsulation dot1Q 40
+                 	
+#interface g0/0/0.40
+#encapsulation dot1Q 40
+#ip address 172.16.40.254 255.255.255.0
+#exit
+
+#Rutas estaticas para comunicar ambas redes
+ip route 172.16.30.0 255.255.255.0 10.0.0.2
+ip route 172.16.40.0 255.255.255.0 10.0.0.2
+
+ip route 192.168.10.0 255.255.255.0 10.0.0.1
+ip route 192.168.20.0 255.255.255.0 10.0.0.1
+
+//Hacer accesslists para que la vlan 10 y la vlan 20 no tengan comunicacion
+
+# Crear la lista en el Router
+access-list 1 deny 192.168.10.0 0.0.0.255
+access-list 1 permit any
+
+# Entrar a la subinterfaz PLANTA (VLAN 20)
+# Es 'out' porque el tráfico SALE del router hacia los nodos de planta
+interface gi0/0/0.20
+ip access-group 1 out
+exit
